@@ -634,9 +634,7 @@ function showScreen(id) {
 // ログイン
 // =====================================================
 function formatCode(input) {
-  let v = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-  if (v.length > 4) v = v.slice(0,4) + '-' + v.slice(4,8);
-  input.value = v;
+  input.value = input.value.toUpperCase();
 }
 
 async function submitCode() {
