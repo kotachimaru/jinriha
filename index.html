@@ -658,7 +658,7 @@ async function submitCode() {
   try {
     const docRef = window._fsDoc(window._db, 'jinriha_codes', code);
     const snap = await window._fsGetDoc(docRef);
-    if (snap.exists() && snap.data().active) {
+    if (snap.exists() && snap.data().valid) {
       loginSuccess(code, snap.data().isDemo || false);
     } else {
       errEl.textContent = 'コードが無効です。noteご購入後に発行されたコードをご確認ください。';
