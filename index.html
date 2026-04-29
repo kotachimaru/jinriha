@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="心リハ問題集">
-<meta name="theme-color" content="#1e3a5f">
-<title>心リハ指導士 問題集</title>
+<meta name="apple-mobile-web-app-title" content="腎リハ問題集">
+<meta name="theme-color" content="#0f4c5c">
+<title>腎リハ指導士 問題集</title>
 <link rel="manifest" href="manifest.json">
 <script src="questions.js"></script>
-<script src="ecg_questions.js"></script>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -55,9 +54,9 @@
   --bg:        #0f172a;
   --surface:   #1e293b;
   --surface2:  #273449;
-  --primary:   #2563eb;
-  --primary-h: #1d4ed8;
-  --accent:    #38bdf8;
+  --primary:   #0d9488;
+  --primary-h: #0f766e;
+  --accent:    #2dd4bf;
   --success:   #22c55e;
   --danger:    #ef4444;
   --warn:      #f59e0b;
@@ -147,7 +146,7 @@ html, body {
   align-items: center;
   gap: 0;
   padding: 0 24px;
-  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 100%);
+  background: linear-gradient(160deg, #0f172a 0%, #0f4c5c 100%);
 }
 .login-logo {
   font-size: 52px; margin-bottom: 8px; text-align: center;
@@ -447,8 +446,8 @@ html, body {
 <!-- ===================== 1. ログイン画面 ===================== -->
 <div id="screen-login" class="screen active">
   <div class="login-logo">🫀</div>
-  <div class="login-title">心リハ指導士<br>問題集</div>
-  <div class="login-sub">心臓リハビリテーション指導士試験対策</div>
+  <div class="login-title">腎リハ指導士<br>問題集</div>
+  <div class="login-sub">腎臓リハビリテーション指導士試験対策</div>
 
   <div class="login-box">
     <label>アクセスコードを入力</label>
@@ -464,7 +463,7 @@ html, body {
     <button onclick="demoLogin()" style="background:none;border:none;color:var(--accent);font-size:inherit;cursor:pointer;text-decoration:underline;padding:0;">デモ版で試す（10問）</button>
   </div>
   <div class="demo-hint" style="margin-top:8px;">
-    <a href="https://note.com/kotachi_no_heya/n/n40ae3b3ff320" target="_blank" style="color:var(--accent);font-size:13px;">noteで購入する →</a>
+    <a href="https://note.com/kotachi_no_heya/n/n3bb471472d1c" target="_blank" style="color:var(--accent);font-size:13px;">noteで購入する →</a>
   </div>
 </div>
 
@@ -472,7 +471,7 @@ html, body {
 <div id="screen-home" class="screen">
   <div class="header">
     <div style="flex:1">
-      <div style="font-size:13px;color:var(--text2)">心臓リハビリテーション指導士</div>
+      <div style="font-size:13px;color:var(--text2)">腎臓リハビリテーション指導士</div>
       <div style="font-size:17px;font-weight:800">問題集</div>
     </div>
     <button class="btn btn-outline btn-sm" onclick="logout()" style="width:auto">ログアウト</button>
@@ -535,11 +534,6 @@ html, body {
     <div class="quiz-question-wrap">
       <div class="quiz-chapter-tag" id="q-chapter-tag"></div>
       <div class="quiz-question-text" id="q-text"></div>
-    </div>
-    <div id="ecg-container" style="display:none; margin: 0 16px 12px;">
-      <div style="background:#fff8f0; border:1px solid #c0502a; border-radius:8px; overflow:hidden;">
-        <svg id="ecg-svg" viewBox="0 0 660 120" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block;"></svg>
-      </div>
     </div>
     <div class="quiz-options" id="q-options"></div>
     <div class="explanation-box" id="explanation-box">
@@ -615,9 +609,9 @@ let state = {
 };
 
 // LocalStorageキー
-const LS_CODE    = 'shinriha_code';
-const LS_STATS   = 'shinriha_stats';   // { total, correct, wrong, weakIds: [] }
-const LS_HISTORY = 'shinriha_history'; // { [qId]: { correct: N, wrong: N } }
+const LS_CODE    = 'jinriha_code';
+const LS_STATS   = 'jinriha_stats';   // { total, correct, wrong, weakIds: [] }
+const LS_HISTORY = 'jinriha_history'; // { [qId]: { correct: N, wrong: N } }
 
 function getStats() {
   return JSON.parse(localStorage.getItem(LS_STATS) || '{"total":0,"correct":0,"wrong":0,"weakIds":[]}');
@@ -664,7 +658,7 @@ async function submitCode() {
 
   // Firebase でコード確認
   try {
-    const docRef = window._fsDoc(window._db, 'codes', code);
+    const docRef = window._fsDoc(window._db, 'jinriha_codes', code);
     const snap = await window._fsGetDoc(docRef);
     if (snap.exists() && snap.data().active) {
       loginSuccess(code, snap.data().isDemo || false);
@@ -714,12 +708,15 @@ function renderHome() {
 
   // 章別リスト
   const chapters = [
-    { num: 1, name: '循環器総論',      icon: '🫀' },
-    { num: 2, name: '循環器各論',      icon: '💊' },
-    { num: 3, name: 'CPX・負荷試験',   icon: '📊' },
-    { num: 4, name: '運動療法',         icon: '🏃' },
-    { num: 5, name: '指導・カウンセリング', icon: '💬' },
-    { num: 6, name: '心電図・不整脈',       icon: '📈' },
+    { num: 1, name: '腎臓リハビリテーション概論',  icon: '🫘' },
+    { num: 2, name: 'CKD病態生理・腎機能評価',     icon: '🔬' },
+    { num: 3, name: '運動療法・身体機能評価',       icon: '🏃' },
+    { num: 4, name: '透析患者の管理と運動療法',     icon: '💧' },
+    { num: 5, name: '腎移植後のリハビリテーション', icon: '🌱' },
+    { num: 6, name: '栄養・食事療法・薬物療法',     icon: '🥗' },
+    { num: 7, name: '合併症管理',                   icon: '⚕️' },
+    { num: 8, name: 'チーム医療・倫理・指導法',     icon: '👥' },
+    { num: 9, name: '模擬試験',                     icon: '📝' },
   ];
   const list = document.getElementById('chapter-list');
   const history = getHistory();
@@ -804,15 +801,6 @@ function renderQuestion() {
   // 問題文
   document.getElementById('q-chapter-tag').textContent = `${question.chapter}章 ${question.chapterName}`;
   document.getElementById('q-text').textContent = `問${question.qNum}．${question.question}`;
-
-  // 心電図SVG
-  const ecgContainer = document.getElementById('ecg-container');
-  if (question.ecgType) {
-    ecgContainer.style.display = 'block';
-    drawECG(document.getElementById('ecg-svg'), question.ecgType);
-  } else {
-    ecgContainer.style.display = 'none';
-  }
 
   // 選択肢
   const optContainer = document.getElementById('q-options');
